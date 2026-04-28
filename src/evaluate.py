@@ -15,9 +15,10 @@ from .visualize import save_actual_vs_predicted_plot, save_feature_importance_pl
 def compute_metrics(y_true: pd.Series, y_pred: np.ndarray) -> dict[str, float]:
     """Compute the core regression metrics used in the paper."""
 
+    mse = float(mean_squared_error(y_true, y_pred))
     return {
         "mae": float(mean_absolute_error(y_true, y_pred)),
-        "rmse": float(mean_squared_error(y_true, y_pred, squared=False)),
+        "rmse": float(np.sqrt(mse)),
         "r2": float(r2_score(y_true, y_pred)),
     }
 
