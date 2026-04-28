@@ -1,0 +1,182 @@
+{
+  "raw": {
+    "rows": 210,
+    "columns": 19,
+    "column_names": [
+      "_id",
+      "FID",
+      "the_geom",
+      "AREA",
+      "PERIMETER",
+      "REGIONS_",
+      "REGIONS_ID",
+      "SQKM",
+      "ADMSQKM",
+      "CODE",
+      "ADMINID",
+      "COUNTRY",
+      "ADLEVEL1",
+      "ADLEVEL2",
+      "ADLEVEL3",
+      "TOTMAZPROD",
+      "MAZYIELD",
+      "AREAHARV",
+      "YEAR"
+    ],
+    "missing_by_column": {
+      "_id": 0,
+      "FID": 0,
+      "the_geom": 0,
+      "AREA": 0,
+      "PERIMETER": 0,
+      "REGIONS_": 0,
+      "REGIONS_ID": 0,
+      "SQKM": 0,
+      "ADMSQKM": 0,
+      "CODE": 0,
+      "ADMINID": 0,
+      "COUNTRY": 0,
+      "ADLEVEL1": 0,
+      "ADLEVEL2": 0,
+      "ADLEVEL3": 0,
+      "TOTMAZPROD": 0,
+      "MAZYIELD": 0,
+      "AREAHARV": 0,
+      "YEAR": 0
+    },
+    "duplicate_rows": 0,
+    "numeric_columns": [
+      "_id",
+      "FID",
+      "AREA",
+      "PERIMETER",
+      "REGIONS_ID",
+      "SQKM",
+      "ADMSQKM",
+      "ADMINID",
+      "TOTMAZPROD",
+      "MAZYIELD",
+      "AREAHARV"
+    ],
+    "categorical_columns": [
+      "the_geom",
+      "REGIONS_",
+      "CODE",
+      "COUNTRY",
+      "ADLEVEL1",
+      "ADLEVEL2",
+      "ADLEVEL3",
+      "YEAR"
+    ]
+  },
+  "cleaned": {
+    "rows": 210,
+    "columns": 7,
+    "column_names": [
+      "adlevel1",
+      "adlevel2",
+      "adlevel3",
+      "totmazprod",
+      "mazyield",
+      "areaharv",
+      "year"
+    ],
+    "missing_by_column": {
+      "adlevel1": 0,
+      "adlevel2": 0,
+      "adlevel3": 0,
+      "totmazprod": 0,
+      "mazyield": 0,
+      "areaharv": 0,
+      "year": 0
+    },
+    "duplicate_rows": 0,
+    "numeric_columns": [
+      "totmazprod",
+      "mazyield",
+      "areaharv"
+    ],
+    "categorical_columns": [
+      "adlevel1",
+      "adlevel2",
+      "adlevel3",
+      "year"
+    ],
+    "missing_required_columns": [],
+    "unexpected_columns": [
+      "id",
+      "regions"
+    ],
+    "row_count": 210,
+    "column_count": 19,
+    "outlier_summary": {
+      "areaharv": {
+        "q1": 1725.5,
+        "q3": 4269.5,
+        "lower": -2090.5,
+        "upper": 8085.5
+      },
+      "totmazprod": {
+        "q1": 22024.5,
+        "q3": 58230.0,
+        "lower": -32283.75,
+        "upper": 112538.25
+      },
+      "mazyield": {
+        "q1": 11.0,
+        "q3": 16.0,
+        "lower": 3.5,
+        "upper": 23.5
+      }
+    }
+  },
+  "augmented": {
+    "rows": 210,
+    "columns": 10,
+    "column_names": [
+      "adlevel1",
+      "adlevel2",
+      "adlevel3",
+      "totmazprod",
+      "mazyield",
+      "areaharv",
+      "year",
+      "rainfall_mm",
+      "temperature_c",
+      "humidity_pct"
+    ],
+    "missing_by_column": {
+      "adlevel1": 0,
+      "adlevel2": 0,
+      "adlevel3": 0,
+      "totmazprod": 0,
+      "mazyield": 0,
+      "areaharv": 0,
+      "year": 0,
+      "rainfall_mm": 0,
+      "temperature_c": 0,
+      "humidity_pct": 0
+    },
+    "duplicate_rows": 0,
+    "numeric_columns": [
+      "totmazprod",
+      "mazyield",
+      "areaharv",
+      "rainfall_mm",
+      "temperature_c",
+      "humidity_pct"
+    ],
+    "categorical_columns": [
+      "adlevel1",
+      "adlevel2",
+      "adlevel3",
+      "year"
+    ],
+    "rainfall_mm_mean": 1151.374619047619,
+    "rainfall_mm_std": 233.75032532914472,
+    "temperature_c_mean": 22.441047619047623,
+    "temperature_c_std": 3.163518852294396,
+    "humidity_pct_mean": 69.93557142857142,
+    "humidity_pct_std": 8.79916018758809
+  }
+}

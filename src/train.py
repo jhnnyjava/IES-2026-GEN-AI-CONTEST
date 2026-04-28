@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 import joblib
@@ -10,224 +11,211 @@ import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import cross_validate, train_test_split
+from sklearn.model_selection import GridSearchCV, KFold, cross_validate, train_test_split
 from sklearn.pipeline import Pipeline
 
-from .preprocessing import build_model_metadata, build_preprocessor, infer_feature_types, prepare_task_data
-from .utils import (
-    MODEL_METADATA_PATH,
-    MODEL_PATH,
-    RANDOM_STATE,
-    RESULTS_CSV_PATH,
-    TARGET_COLUMNS,
-    ensure_project_dirs,
-    save_json,
-)
+from .decision import derive_risk_threshold
+from .preprocessing import build_preprocessor, split_features_target
+from .utils import MODEL_METADATA_PATH, MODEL_PATH, RANDOM_STATE, RESULTS_CSV_PATH, TARGET_PRIMARY, TARGET_SECONDARY, ensure_project_dirs, save_json
 
 
-@dataclass
-class TrainingBundle:
-    """Container for the best fitted pipeline and its holdout data."""
+CV_SPLITS = 5
 
+
+@dataclass(slots=True)
+class ModelBundle:
     target: str
     model_name: str
     pipeline: Pipeline
+    best_params: dict[str, Any]
     X_train: pd.DataFrame
     X_test: pd.DataFrame
     y_train: pd.Series
     y_test: pd.Series
     y_pred: np.ndarray
-    mae: float
-    rmse: float
-    r2: float
-    cv_mae_mean: float | None
-    cv_rmse_mean: float | None
-    cv_r2_mean: float | None
+    holdout_metrics: dict[str, float]
+    cv_metrics: dict[str, float]
     feature_columns: list[str]
     numeric_features: list[str]
     categorical_features: list[str]
-    target_rows: int
-    target_zero_share: float
+    decision_threshold: float
 
 
-def _compute_metrics(y_true: pd.Series, y_pred: np.ndarray) -> dict[str, float]:
+@dataclass(slots=True)
+class ProjectTrainingReport:
+    comparison_table: pd.DataFrame
+    primary_bundle: ModelBundle
+    secondary_bundle: ModelBundle | None
+
+
+def _metrics(y_true: pd.Series, y_pred: np.ndarray) -> dict[str, float]:
     mse = float(mean_squared_error(y_true, y_pred))
+    return {"mae": float(mean_absolute_error(y_true, y_pred)), "rmse": float(np.sqrt(mse)), "r2": float(r2_score(y_true, y_pred))}
+
+
+def _cv_strategy() -> KFold:
+    return KFold(n_splits=CV_SPLITS, shuffle=True, random_state=RANDOM_STATE)
+
+
+def _build_model_candidates() -> dict[str, tuple[Any, dict[str, list[Any]]]]:
     return {
-        "mae": float(mean_absolute_error(y_true, y_pred)),
-        "rmse": float(np.sqrt(mse)),
-        "r2": float(r2_score(y_true, y_pred)),
+        "linear_regression": (LinearRegression(), {}),
+        "random_forest": (
+            RandomForestRegressor(random_state=RANDOM_STATE, n_jobs=-1),
+            {"model__n_estimators": [120, 200], "model__max_depth": [None, 10], "model__min_samples_leaf": [1, 2], "model__max_features": ["sqrt"]},
+        ),
+        "gradient_boosting": (
+            GradientBoostingRegressor(random_state=RANDOM_STATE),
+            {"model__n_estimators": [120, 180], "model__learning_rate": [0.05, 0.1], "model__max_depth": [2, 3], "model__subsample": [0.8]},
+        ),
     }
 
 
-def _candidate_models() -> dict[str, Any]:
-    return {
-        "linear_regression": LinearRegression(),
-        "random_forest": RandomForestRegressor(n_estimators=200, random_state=RANDOM_STATE, n_jobs=-1),
-        "gradient_boosting": GradientBoostingRegressor(random_state=RANDOM_STATE),
+def _fit_candidate(name: str, estimator: Any, param_grid: dict[str, list[Any]], X_train: pd.DataFrame, y_train: pd.Series) -> tuple[Pipeline, dict[str, Any], dict[str, float]]:
+    preprocessor = build_preprocessor(X_train)
+    pipeline = Pipeline([("preprocessor", preprocessor), ("model", estimator)])
+
+    best_params: dict[str, Any] = {}
+    fitted_pipeline = pipeline
+    if param_grid:
+        search = GridSearchCV(pipeline, param_grid=param_grid, scoring="neg_mean_absolute_error", cv=3, n_jobs=1, refit=True)
+        search.fit(X_train, y_train)
+        fitted_pipeline = search.best_estimator_
+        best_params = {key.replace("model__", ""): value for key, value in search.best_params_.items()}
+    else:
+        fitted_pipeline.fit(X_train, y_train)
+
+    cv_scores = cross_validate(
+        fitted_pipeline,
+        X_train,
+        y_train,
+        cv=_cv_strategy(),
+        scoring={"mae": "neg_mean_absolute_error", "rmse": "neg_root_mean_squared_error", "r2": "r2"},
+        n_jobs=1,
+    )
+
+    cv_metrics = {
+        "cv_mae_mean": float(-np.mean(cv_scores["test_mae"])),
+        "cv_mae_std": float(np.std(cv_scores["test_mae"])),
+        "cv_rmse_mean": float(-np.mean(cv_scores["test_rmse"])),
+        "cv_rmse_std": float(np.std(cv_scores["test_rmse"])),
+        "cv_r2_mean": float(np.mean(cv_scores["test_r2"])),
+        "cv_r2_std": float(np.std(cv_scores["test_r2"])),
     }
+    return fitted_pipeline, best_params, cv_metrics
 
 
-def _safe_cross_validation(pipeline: Pipeline, X: pd.DataFrame, y: pd.Series) -> dict[str, float | None]:
-    if len(y) < 8 or y.nunique() < 2:
-        return {"cv_mae_mean": None, "cv_rmse_mean": None, "cv_r2_mean": None}
+def train_target_models(df: pd.DataFrame, target_column: str) -> tuple[pd.DataFrame, ModelBundle]:
+    """Train the full candidate set for a single target."""
 
-    folds = min(5, max(3, len(y) // 5))
-    folds = min(folds, len(y))
-    if folds < 2:
-        return {"cv_mae_mean": None, "cv_rmse_mean": None, "cv_r2_mean": None}
-
-    try:
-        scores = cross_validate(
-            pipeline,
-            X,
-            y,
-            cv=folds,
-            scoring={
-                "mae": "neg_mean_absolute_error",
-                "rmse": "neg_root_mean_squared_error",
-                "r2": "r2",
-            },
-            n_jobs=None,
-            error_score="raise",
-        )
-    except Exception:
-        return {"cv_mae_mean": None, "cv_rmse_mean": None, "cv_r2_mean": None}
-
-    return {
-        "cv_mae_mean": float(-np.mean(scores["test_mae"])),
-        "cv_rmse_mean": float(-np.mean(scores["test_rmse"])),
-        "cv_r2_mean": float(np.mean(scores["test_r2"])),
-    }
-
-
-def train_models_for_target(df: pd.DataFrame, target_column: str) -> tuple[pd.DataFrame, TrainingBundle]:
-    """Train and compare the candidate regressors for one target."""
-
-    X, y, feature_columns = prepare_task_data(df, target_column)
+    X, y, feature_columns = split_features_target(df, target_column)
     if y.nunique() < 2:
         raise ValueError(f"Target '{target_column}' does not contain enough variation for regression.")
 
-    test_size = 0.2 if len(y) >= 20 else 0.3
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=test_size,
-        random_state=RANDOM_STATE,
-    )
+    test_size = 0.2 if len(y) >= 25 else 0.3
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=RANDOM_STATE)
 
-    preprocessor = build_preprocessor(X_train)
-    numeric_features, categorical_features = infer_feature_types(X_train)
+    results: list[dict[str, Any]] = []
+    best_bundle: ModelBundle | None = None
 
-    rows: list[dict[str, Any]] = []
-    best_bundle: TrainingBundle | None = None
+    for model_name, (estimator, grid) in _build_model_candidates().items():
+        start = perf_counter()
+        fitted_pipeline, best_params, cv_metrics = _fit_candidate(model_name, estimator, grid, X_train, y_train)
+        fit_seconds = perf_counter() - start
+        y_pred = fitted_pipeline.predict(X_test)
+        holdout_metrics = _metrics(y_test, y_pred)
 
-    for model_name, estimator in _candidate_models().items():
-        pipeline = Pipeline(
-            steps=[
-                ("preprocessor", preprocessor),
-                ("model", estimator),
-            ]
-        )
-        pipeline.fit(X_train, y_train)
-        predictions = pipeline.predict(X_test)
-        metrics = _compute_metrics(y_test, predictions)
-        cv_metrics = _safe_cross_validation(pipeline, X, y)
-
-        row = {
+        result_row = {
             "target": target_column,
             "model": model_name,
-            "mae": metrics["mae"],
-            "rmse": metrics["rmse"],
-            "r2": metrics["r2"],
+            "mae": holdout_metrics["mae"],
+            "rmse": holdout_metrics["rmse"],
+            "r2": holdout_metrics["r2"],
             "cv_mae_mean": cv_metrics["cv_mae_mean"],
+            "cv_mae_std": cv_metrics["cv_mae_std"],
             "cv_rmse_mean": cv_metrics["cv_rmse_mean"],
+            "cv_rmse_std": cv_metrics["cv_rmse_std"],
             "cv_r2_mean": cv_metrics["cv_r2_mean"],
-            "rows": int(len(y)),
-            "test_rows": int(len(y_test)),
-            "target_zero_share": float((y == 0).mean()) if len(y) else 0.0,
+            "cv_r2_std": cv_metrics["cv_r2_std"],
+            "fit_seconds": fit_seconds,
+            "best_params": best_params,
+            "train_rows": int(len(X_train)),
+            "test_rows": int(len(X_test)),
         }
-        rows.append(row)
+        results.append(result_row)
 
-        candidate_bundle = TrainingBundle(
+        numeric_features = [column for column in X_train.columns if column not in {"adlevel1", "adlevel2", "adlevel3", "year"}]
+        categorical_features = [column for column in X_train.columns if column in {"adlevel1", "adlevel2", "adlevel3", "year"}]
+        bundle = ModelBundle(
             target=target_column,
             model_name=model_name,
-            pipeline=pipeline,
+            pipeline=fitted_pipeline,
+            best_params=best_params,
             X_train=X_train,
             X_test=X_test,
             y_train=y_train,
             y_test=y_test,
-            y_pred=np.asarray(predictions),
-            mae=metrics["mae"],
-            rmse=metrics["rmse"],
-            r2=metrics["r2"],
-            cv_mae_mean=cv_metrics["cv_mae_mean"],
-            cv_rmse_mean=cv_metrics["cv_rmse_mean"],
-            cv_r2_mean=cv_metrics["cv_r2_mean"],
+            y_pred=np.asarray(y_pred),
+            holdout_metrics=holdout_metrics,
+            cv_metrics=cv_metrics,
             feature_columns=feature_columns,
-            numeric_features=list(numeric_features),
-            categorical_features=list(categorical_features),
-            target_rows=int(len(y)),
-            target_zero_share=float((y == 0).mean()) if len(y) else 0.0,
+            numeric_features=numeric_features,
+            categorical_features=categorical_features,
+            decision_threshold=derive_risk_threshold(y_train),
         )
 
-        if best_bundle is None or candidate_bundle.mae < best_bundle.mae:
-            best_bundle = candidate_bundle
+        if best_bundle is None or bundle.holdout_metrics["mae"] < best_bundle.holdout_metrics["mae"]:
+            best_bundle = bundle
 
-    if best_bundle is None:
-        raise RuntimeError(f"No model could be trained for target '{target_column}'.")
+    assert best_bundle is not None
+    comparison = pd.DataFrame(results).sort_values(["target", "mae"]).reset_index(drop=True)
+    return comparison, best_bundle
 
-    return pd.DataFrame(rows), best_bundle
 
+def train_project(df: pd.DataFrame) -> ProjectTrainingReport:
+    """Train the primary target and optional secondary target."""
 
-def train_all_targets(df: pd.DataFrame) -> tuple[pd.DataFrame, TrainingBundle]:
-    """Train all valid target tasks and select the best overall model."""
+    primary_comparison, primary_bundle = train_target_models(df, TARGET_PRIMARY)
+    secondary_bundle: ModelBundle | None = None
+    comparisons = [primary_comparison]
+    if TARGET_SECONDARY in df.columns:
+        secondary_comparison, secondary_bundle = train_target_models(df, TARGET_SECONDARY)
+        comparisons.append(secondary_comparison)
 
-    all_results = []
-    best_bundle: TrainingBundle | None = None
-
-    for target in TARGET_COLUMNS:
-        if target not in df.columns:
-            continue
-        target_results, target_bundle = train_models_for_target(df, target)
-        all_results.append(target_results)
-        if best_bundle is None or target_bundle.mae < best_bundle.mae:
-            best_bundle = target_bundle
-
-    if not all_results:
-        raise ValueError("Neither TOTMAZPROD nor MAZYIELD was available for training.")
-
-    if best_bundle is None:
-        raise RuntimeError("Failed to select a best model.")
-
-    return pd.concat(all_results, ignore_index=True), best_bundle
+    combined = pd.concat(comparisons, ignore_index=True).sort_values(["target", "mae"]).reset_index(drop=True)
+    return ProjectTrainingReport(comparison_table=combined, primary_bundle=primary_bundle, secondary_bundle=secondary_bundle)
 
 
 def save_results_table(results_df: pd.DataFrame, output_path: str | Path = RESULTS_CSV_PATH) -> Path:
     ensure_project_dirs()
     output = Path(output_path)
-    results_df.sort_values(["mae", "rmse"], ascending=True).to_csv(output, index=False)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    results_df.to_csv(output, index=False)
     return output
 
 
-def save_best_model(bundle: TrainingBundle, model_path: str | Path = MODEL_PATH, metadata_path: str | Path = MODEL_METADATA_PATH) -> tuple[Path, Path]:
-    """Persist the best fitted pipeline and a small JSON metadata file."""
+def save_model_artifacts(bundle: ModelBundle, comparison_df: pd.DataFrame, dataset_summary: dict[str, Any], augmentation_summary: dict[str, Any]) -> tuple[Path, Path]:
+    """Persist the best fitted pipeline and a scientific metadata payload."""
 
     ensure_project_dirs()
-    model_output = Path(model_path)
-    metadata_output = Path(metadata_path)
+    model_output = Path(MODEL_PATH)
+    metadata_output = Path(MODEL_METADATA_PATH)
 
     joblib.dump(bundle.pipeline, model_output)
-    metadata = build_model_metadata(bundle.target, bundle.feature_columns, bundle.X_train, bundle.y_train)
-    metadata.update(
-        {
-            "model_name": bundle.model_name,
-            "mae": bundle.mae,
-            "rmse": bundle.rmse,
-            "r2": bundle.r2,
-            "cv_mae_mean": bundle.cv_mae_mean,
-            "cv_rmse_mean": bundle.cv_rmse_mean,
-            "cv_r2_mean": bundle.cv_r2_mean,
-        }
-    )
+    metadata = {
+        "target": bundle.target,
+        "model_name": bundle.model_name,
+        "best_params": bundle.best_params,
+        "holdout_metrics": bundle.holdout_metrics,
+        "cv_metrics": bundle.cv_metrics,
+        "feature_columns": bundle.feature_columns,
+        "numeric_features": bundle.numeric_features,
+        "categorical_features": bundle.categorical_features,
+        "decision_threshold": bundle.decision_threshold,
+        "dataset_summary": dataset_summary,
+        "augmentation_summary": augmentation_summary,
+        "comparison_snapshot": comparison_df.to_dict(orient="records"),
+        "model_size_bytes": model_output.stat().st_size if model_output.exists() else None,
+    }
     save_json(metadata_output, metadata)
     return model_output, metadata_output

@@ -1,0 +1,276 @@
+{
+  "target": "totmazprod",
+  "model_name": "linear_regression",
+  "best_params": {},
+  "holdout_metrics": {
+    "mae": 11389.305560576375,
+    "rmse": 14145.843140234656,
+    "r2": 0.566965515352905
+  },
+  "cv_metrics": {
+    "cv_mae_mean": 11662.875158755702,
+    "cv_mae_std": 1315.0379673826078,
+    "cv_rmse_mean": 14709.551378479277,
+    "cv_rmse_std": 1479.2986731765411,
+    "cv_r2_mean": 0.5885447984848681,
+    "cv_r2_std": 0.05868291896542111
+  },
+  "feature_columns": [
+    "adlevel1",
+    "adlevel2",
+    "adlevel3",
+    "areaharv",
+    "year",
+    "rainfall_mm",
+    "temperature_c",
+    "humidity_pct"
+  ],
+  "numeric_features": [
+    "areaharv",
+    "rainfall_mm",
+    "temperature_c",
+    "humidity_pct"
+  ],
+  "categorical_features": [
+    "adlevel1",
+    "adlevel2",
+    "adlevel3",
+    "year"
+  ],
+  "decision_threshold": 21581.25,
+  "dataset_summary": {
+    "rows": 210,
+    "columns": 7,
+    "column_names": [
+      "adlevel1",
+      "adlevel2",
+      "adlevel3",
+      "totmazprod",
+      "mazyield",
+      "areaharv",
+      "year"
+    ],
+    "missing_by_column": {
+      "adlevel1": 0,
+      "adlevel2": 0,
+      "adlevel3": 0,
+      "totmazprod": 0,
+      "mazyield": 0,
+      "areaharv": 0,
+      "year": 0
+    },
+    "duplicate_rows": 0,
+    "numeric_columns": [
+      "totmazprod",
+      "mazyield",
+      "areaharv"
+    ],
+    "categorical_columns": [
+      "adlevel1",
+      "adlevel2",
+      "adlevel3",
+      "year"
+    ],
+    "missing_required_columns": [],
+    "unexpected_columns": [
+      "id",
+      "regions"
+    ],
+    "row_count": 210,
+    "column_count": 19,
+    "outlier_summary": {
+      "areaharv": {
+        "q1": 1725.5,
+        "q3": 4269.5,
+        "lower": -2090.5,
+        "upper": 8085.5
+      },
+      "totmazprod": {
+        "q1": 22024.5,
+        "q3": 58230.0,
+        "lower": -32283.75,
+        "upper": 112538.25
+      },
+      "mazyield": {
+        "q1": 11.0,
+        "q3": 16.0,
+        "lower": 3.5,
+        "upper": 23.5
+      }
+    }
+  },
+  "augmentation_summary": {
+    "rows": 210,
+    "columns": 10,
+    "column_names": [
+      "adlevel1",
+      "adlevel2",
+      "adlevel3",
+      "totmazprod",
+      "mazyield",
+      "areaharv",
+      "year",
+      "rainfall_mm",
+      "temperature_c",
+      "humidity_pct"
+    ],
+    "missing_by_column": {
+      "adlevel1": 0,
+      "adlevel2": 0,
+      "adlevel3": 0,
+      "totmazprod": 0,
+      "mazyield": 0,
+      "areaharv": 0,
+      "year": 0,
+      "rainfall_mm": 0,
+      "temperature_c": 0,
+      "humidity_pct": 0
+    },
+    "duplicate_rows": 0,
+    "numeric_columns": [
+      "totmazprod",
+      "mazyield",
+      "areaharv",
+      "rainfall_mm",
+      "temperature_c",
+      "humidity_pct"
+    ],
+    "categorical_columns": [
+      "adlevel1",
+      "adlevel2",
+      "adlevel3",
+      "year"
+    ],
+    "rainfall_mm_mean": 1151.374619047619,
+    "rainfall_mm_std": 233.75032532914472,
+    "temperature_c_mean": 22.441047619047623,
+    "temperature_c_std": 3.163518852294396,
+    "humidity_pct_mean": 69.93557142857142,
+    "humidity_pct_std": 8.79916018758809
+  },
+  "comparison_snapshot": [
+    {
+      "target": "mazyield",
+      "model": "random_forest",
+      "mae": 3.173816466304389,
+      "rmse": 3.804265339136685,
+      "r2": -0.3616392839757916,
+      "cv_mae_mean": 2.9541775554182896,
+      "cv_mae_std": 0.26030370466601893,
+      "cv_rmse_mean": 3.3874259336021866,
+      "cv_rmse_std": 0.20346451276504085,
+      "cv_r2_mean": -0.038232666376935766,
+      "cv_r2_std": 0.07379689614178682,
+      "fit_seconds": 6.603068900003564,
+      "best_params": {
+        "max_depth": 10,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1,
+        "n_estimators": 120
+      },
+      "train_rows": 168,
+      "test_rows": 42
+    },
+    {
+      "target": "mazyield",
+      "model": "linear_regression",
+      "mae": 3.4141221590146515,
+      "rmse": 4.1111612209035595,
+      "r2": -0.5901917208724108,
+      "cv_mae_mean": 3.554425736491595,
+      "cv_mae_std": 0.31860916488181135,
+      "cv_rmse_mean": 4.2440809436168285,
+      "cv_rmse_std": 0.39364106096705737,
+      "cv_r2_mean": -0.6672446161539936,
+      "cv_r2_std": 0.3956068730108449,
+      "fit_seconds": 0.11064580001402646,
+      "best_params": {},
+      "train_rows": 168,
+      "test_rows": 42
+    },
+    {
+      "target": "mazyield",
+      "model": "gradient_boosting",
+      "mae": 3.50164241657311,
+      "rmse": 4.2544503835696,
+      "r2": -0.7029715712237845,
+      "cv_mae_mean": 2.9422462673943004,
+      "cv_mae_std": 0.28396076502560375,
+      "cv_rmse_mean": 3.4547097069801493,
+      "cv_rmse_std": 0.23365803685721015,
+      "cv_r2_mean": -0.07893116463438102,
+      "cv_r2_std": 0.0804471216568502,
+      "fit_seconds": 3.2558395000523888,
+      "best_params": {
+        "learning_rate": 0.05,
+        "max_depth": 2,
+        "n_estimators": 180,
+        "subsample": 0.8
+      },
+      "train_rows": 168,
+      "test_rows": 42
+    },
+    {
+      "target": "totmazprod",
+      "model": "linear_regression",
+      "mae": 11389.305560576375,
+      "rmse": 14145.843140234656,
+      "r2": 0.566965515352905,
+      "cv_mae_mean": 11662.875158755702,
+      "cv_mae_std": 1315.0379673826078,
+      "cv_rmse_mean": 14709.551378479277,
+      "cv_rmse_std": 1479.2986731765411,
+      "cv_r2_mean": 0.5885447984848681,
+      "cv_r2_std": 0.05868291896542111,
+      "fit_seconds": 0.11276479996740818,
+      "best_params": {},
+      "train_rows": 168,
+      "test_rows": 42
+    },
+    {
+      "target": "totmazprod",
+      "model": "gradient_boosting",
+      "mae": 11985.63251137633,
+      "rmse": 15346.089054574448,
+      "r2": 0.49036383971770847,
+      "cv_mae_mean": 9548.662447014194,
+      "cv_mae_std": 893.6695920228595,
+      "cv_rmse_mean": 12204.255261759343,
+      "cv_rmse_std": 586.5181477922898,
+      "cv_r2_mean": 0.7111139212040941,
+      "cv_r2_std": 0.05591163183987204,
+      "fit_seconds": 2.883163999998942,
+      "best_params": {
+        "learning_rate": 0.1,
+        "max_depth": 2,
+        "n_estimators": 120,
+        "subsample": 0.8
+      },
+      "train_rows": 168,
+      "test_rows": 42
+    },
+    {
+      "target": "totmazprod",
+      "model": "random_forest",
+      "mae": 13103.896904761903,
+      "rmse": 15036.18892483469,
+      "r2": 0.5107392751108504,
+      "cv_mae_mean": 13652.658266488414,
+      "cv_mae_std": 1534.6857274476272,
+      "cv_rmse_mean": 16629.722844374264,
+      "cv_rmse_std": 2529.4826252386233,
+      "cv_r2_mean": 0.4795795118462455,
+      "cv_r2_std": 0.07373319887029701,
+      "fit_seconds": 7.519487300014589,
+      "best_params": {
+        "max_depth": null,
+        "max_features": "sqrt",
+        "min_samples_leaf": 1,
+        "n_estimators": 200
+      },
+      "train_rows": 168,
+      "test_rows": 42
+    }
+  ],
+  "model_size_bytes": 6234
+}

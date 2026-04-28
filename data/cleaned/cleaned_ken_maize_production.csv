@@ -1,0 +1,211 @@
+adlevel1,adlevel2,adlevel3,totmazprod,mazyield,areaharv,year
+Central,Kiambu,Thika,20772,12.0,1731,86-90
+Central,Kiambu,Thika,85519,19.0,4501,91-95
+Central,Kiambu,Thika,47583,17.0,2799,96-00
+Central,Kiambu,Thika,14688,16.0,918,01-05
+Central,Kiambu,Thika,72658,17.0,4274,06-10
+Central,Kiambu,Thika,41724,18.0,2318,11-15
+Central,Kiambu,Ruiru,18636,12.0,1553,86-90
+Central,Kiambu,Ruiru,37458,18.0,2081,91-95
+Central,Kiambu,Ruiru,32488,8.0,4061,96-00
+Central,Kiambu,Ruiru,32211,9.0,3579,01-05
+Central,Kiambu,Ruiru,75435,15.0,5029,06-10
+Central,Kiambu,Ruiru,20559,11.0,1869,11-15
+Central,Kiambu,Gatundu,34153,17.0,2009,86-90
+Central,Kiambu,Gatundu,46764,18.0,2598,91-95
+Central,Kiambu,Gatundu,52440,12.0,4370,96-00
+Central,Kiambu,Gatundu,14245,11.0,1295,01-05
+Central,Kiambu,Gatundu,35968,16.0,2248,06-10
+Central,Kiambu,Gatundu,10824,12.0,902,11-15
+Central,Muranga,Murang'a,16874,13.0,1298,86-90
+Central,Muranga,Murang'a,80087,17.0,4711,91-95
+Central,Muranga,Murang'a,16200,10.0,1620,96-00
+Central,Muranga,Murang'a,48958,13.0,3766,01-05
+Central,Muranga,Murang'a,19180,14.0,1370,06-10
+Central,Muranga,Murang'a,56182,14.0,4013,11-15
+Central,Muranga,Kangema,28611,9.0,3179,86-90
+Central,Muranga,Kangema,18512,16.0,1157,91-95
+Central,Muranga,Kangema,9180,10.0,918,96-00
+Central,Muranga,Kangema,41304,12.0,3442,01-05
+Central,Muranga,Kangema,34412,14.0,2458,06-10
+Central,Muranga,Kangema,9324,18.0,518,11-15
+Central,Nyeri,Nyeri,65376,18.0,3632,86-90
+Central,Nyeri,Nyeri,20740,17.0,1220,91-95
+Central,Nyeri,Nyeri,6008,8.0,751,96-00
+Central,Nyeri,Nyeri,75690,18.0,4205,01-05
+Central,Nyeri,Nyeri,53208,12.0,4434,06-10
+Central,Nyeri,Nyeri,22957,11.0,2087,11-15
+Central,Nyeri,Othaya,99636,19.0,5244,86-90
+Central,Nyeri,Othaya,67120,16.0,4195,91-95
+Central,Nyeri,Othaya,39550,14.0,2825,96-00
+Central,Nyeri,Othaya,37881,9.0,4209,01-05
+Central,Nyeri,Othaya,53086,19.0,2794,06-10
+Central,Nyeri,Othaya,89243,19.0,4697,11-15
+Coastal,Mombasa,Mombasa,32870,19.0,1730,86-90
+Coastal,Mombasa,Mombasa,25751,11.0,2341,91-95
+Coastal,Mombasa,Mombasa,62784,18.0,3488,96-00
+Coastal,Mombasa,Mombasa,13824,9.0,1536,01-05
+Coastal,Mombasa,Mombasa,58008,12.0,4834,06-10
+Coastal,Mombasa,Mombasa,45733,19.0,2407,11-15
+Coastal,Mombasa,Port Reitz,35901,9.0,3989,86-90
+Coastal,Mombasa,Port Reitz,14421,11.0,1311,91-95
+Coastal,Mombasa,Port Reitz,32940,12.0,2745,96-00
+Coastal,Mombasa,Port Reitz,57817,19.0,3043,01-05
+Coastal,Mombasa,Port Reitz,17046,9.0,1894,06-10
+Coastal,Mombasa,Port Reitz,24440,8.0,3055,11-15
+Coastal,Kwale,Kwale,14663,11.0,1333,86-90
+Coastal,Kwale,Kwale,18198,9.0,2022,91-95
+Coastal,Kwale,Kwale,8512,16.0,532,96-00
+Coastal,Kwale,Kwale,42849,9.0,4761,01-05
+Coastal,Kwale,Kwale,20208,16.0,1263,06-10
+Coastal,Kwale,Kwale,57226,13.0,4402,11-15
+Coastal,Kwale,Ukunda,70672,16.0,4417,86-90
+Coastal,Kwale,Ukunda,94482,18.0,5249,91-95
+Coastal,Kwale,Ukunda,41076,12.0,3423,96-00
+Coastal,Kwale,Ukunda,18704,16.0,1169,01-05
+Coastal,Kwale,Ukunda,65156,13.0,5012,06-10
+Coastal,Kwale,Ukunda,79254,17.0,4662,11-15
+Coastal,Lamu,Lamu,21936,16.0,1371,86-90
+Coastal,Lamu,Lamu,42390,9.0,4710,91-95
+Coastal,Lamu,Lamu,17590,10.0,1759,96-00
+Coastal,Lamu,Lamu,9624,8.0,1203,01-05
+Coastal,Lamu,Lamu,58618,14.0,4187,06-10
+Coastal,Lamu,Lamu,71640,15.0,4776,11-15
+Coastal,Lamu,Kiunga,33293,13.0,2561,86-90
+Coastal,Lamu,Kiunga,45009,9.0,5001,91-95
+Coastal,Lamu,Kiunga,19773,13.0,1521,96-00
+Coastal,Lamu,Kiunga,60049,11.0,5459,01-05
+Coastal,Lamu,Kiunga,9810,18.0,545,06-10
+Coastal,Lamu,Kiunga,9740,10.0,974,11-15
+Eastern,Makueni,Makueni,54930,10.0,5493,86-90
+Eastern,Makueni,Makueni,31644,12.0,2637,91-95
+Eastern,Makueni,Makueni,57540,14.0,4110,96-00
+Eastern,Makueni,Makueni,70465,17.0,4145,01-05
+Eastern,Makueni,Makueni,78659,17.0,4627,06-10
+Eastern,Makueni,Makueni,30880,8.0,3860,11-15
+Eastern,Makueni,Mwala,58304,16.0,3644,86-90
+Eastern,Makueni,Mwala,47124,18.0,2618,91-95
+Eastern,Makueni,Mwala,27885,13.0,2145,96-00
+Eastern,Makueni,Mwala,10264,8.0,1283,01-05
+Eastern,Makueni,Mwala,57084,12.0,4757,06-10
+Eastern,Makueni,Mwala,7029,9.0,781,11-15
+Eastern,Machakos,Machakos,44941,13.0,3457,86-90
+Eastern,Machakos,Machakos,21740,10.0,2174,91-95
+Eastern,Machakos,Machakos,24165,15.0,1611,96-00
+Eastern,Machakos,Machakos,57018,13.0,4386,01-05
+Eastern,Machakos,Machakos,35361,9.0,3929,06-10
+Eastern,Machakos,Machakos,59717,19.0,3143,11-15
+Eastern,Machakos,Kangundo,44935,11.0,4085,86-90
+Eastern,Machakos,Kangundo,21105,9.0,2345,91-95
+Eastern,Machakos,Kangundo,32428,11.0,2948,96-00
+Eastern,Machakos,Kangundo,62509,17.0,3677,01-05
+Eastern,Machakos,Kangundo,62848,16.0,3928,06-10
+Eastern,Machakos,Kangundo,71130,15.0,4742,11-15
+Eastern,Embu,Embu,14287,13.0,1099,86-90
+Eastern,Embu,Embu,84800,16.0,5300,91-95
+Eastern,Embu,Embu,62580,14.0,4470,96-00
+Eastern,Embu,Embu,28721,11.0,2611,01-05
+Eastern,Embu,Embu,34360,10.0,3436,06-10
+Eastern,Embu,Embu,27360,9.0,3040,11-15
+Eastern,Embu,Runyenjes,74157,19.0,3903,86-90
+Eastern,Embu,Runyenjes,63360,18.0,3520,91-95
+Eastern,Embu,Runyenjes,17017,11.0,1547,96-00
+Eastern,Embu,Runyenjes,46980,10.0,4698,01-05
+Eastern,Embu,Runyenjes,12432,16.0,777,06-10
+Eastern,Embu,Runyenjes,46670,10.0,4667,11-15
+Nyanza,Kisumu,Kisumu,27013,17.0,1589,86-90
+Nyanza,Kisumu,Kisumu,93594,19.0,4926,91-95
+Nyanza,Kisumu,Kisumu,5770,10.0,577,96-00
+Nyanza,Kisumu,Kisumu,34400,16.0,2150,01-05
+Nyanza,Kisumu,Kisumu,30560,8.0,3820,06-10
+Nyanza,Kisumu,Kisumu,43780,11.0,3980,11-15
+Nyanza,Kisumu,Siaya,36296,13.0,2792,86-90
+Nyanza,Kisumu,Siaya,23772,12.0,1981,91-95
+Nyanza,Kisumu,Siaya,78288,16.0,4893,96-00
+Nyanza,Kisumu,Siaya,12293,19.0,647,01-05
+Nyanza,Kisumu,Siaya,45346,14.0,3239,06-10
+Nyanza,Kisumu,Siaya,78368,16.0,4898,11-15
+Nyanza,Migori,Migori,63999,13.0,4923,86-90
+Nyanza,Migori,Migori,47372,13.0,3644,91-95
+Nyanza,Migori,Migori,83142,18.0,4619,96-00
+Nyanza,Migori,Migori,84417,19.0,4443,01-05
+Nyanza,Migori,Migori,16716,12.0,1393,06-10
+Nyanza,Migori,Migori,26550,18.0,1475,11-15
+Nyanza,Migori,Kericho,6903,9.0,767,86-90
+Nyanza,Migori,Kericho,50100,15.0,3340,91-95
+Nyanza,Migori,Kericho,32400,12.0,2700,96-00
+Nyanza,Migori,Kericho,48630,10.0,4863,01-05
+Nyanza,Migori,Kericho,45045,13.0,3465,06-10
+Nyanza,Migori,Kericho,42780,12.0,3565,11-15
+Nyanza,Homa Bay,Homa Bay,24480,12.0,2040,86-90
+Nyanza,Homa Bay,Homa Bay,32330,10.0,3233,91-95
+Nyanza,Homa Bay,Homa Bay,34944,8.0,4368,96-00
+Nyanza,Homa Bay,Homa Bay,37998,18.0,2111,01-05
+Nyanza,Homa Bay,Homa Bay,32000,8.0,4000,06-10
+Nyanza,Homa Bay,Homa Bay,25857,17.0,1521,11-15
+Nyanza,Homa Bay,Suba,35248,16.0,2203,86-90
+Nyanza,Homa Bay,Suba,52542,14.0,3753,91-95
+Nyanza,Homa Bay,Suba,22373,13.0,1721,96-00
+Nyanza,Homa Bay,Suba,41850,18.0,2325,01-05
+Nyanza,Homa Bay,Suba,42679,13.0,3283,06-10
+Nyanza,Homa Bay,Suba,13504,16.0,844,11-15
+Rift Valley,Nakuru,Nakuru,83916,18.0,4662,86-90
+Rift Valley,Nakuru,Nakuru,44730,9.0,4970,91-95
+Rift Valley,Nakuru,Nakuru,67590,15.0,4506,96-00
+Rift Valley,Nakuru,Nakuru,18645,11.0,1695,01-05
+Rift Valley,Nakuru,Nakuru,57648,12.0,4804,06-10
+Rift Valley,Nakuru,Nakuru,19110,14.0,1365,11-15
+Rift Valley,Nakuru,Njoro,73758,19.0,3882,86-90
+Rift Valley,Nakuru,Njoro,18678,11.0,1698,91-95
+Rift Valley,Nakuru,Njoro,46860,10.0,4686,96-00
+Rift Valley,Nakuru,Njoro,59220,12.0,4935,01-05
+Rift Valley,Nakuru,Njoro,68272,17.0,4016,06-10
+Rift Valley,Nakuru,Njoro,47736,12.0,3978,11-15
+Rift Valley,Uasin Gishu,Eldoret,77376,16.0,4836,86-90
+Rift Valley,Uasin Gishu,Eldoret,18546,11.0,1686,91-95
+Rift Valley,Uasin Gishu,Eldoret,79408,16.0,4963,96-00
+Rift Valley,Uasin Gishu,Eldoret,65826,18.0,3657,01-05
+Rift Valley,Uasin Gishu,Eldoret,53190,18.0,2955,06-10
+Rift Valley,Uasin Gishu,Eldoret,29865,15.0,1991,11-15
+Rift Valley,Uasin Gishu,Turbo,13125,15.0,875,86-90
+Rift Valley,Uasin Gishu,Turbo,16290,15.0,1086,91-95
+Rift Valley,Uasin Gishu,Turbo,46816,11.0,4256,96-00
+Rift Valley,Uasin Gishu,Turbo,39104,16.0,2444,01-05
+Rift Valley,Uasin Gishu,Turbo,22412,13.0,1724,06-10
+Rift Valley,Uasin Gishu,Turbo,62868,13.0,4836,11-15
+Rift Valley,Trans-Nzoia,Kitale,36890,10.0,3689,86-90
+Rift Valley,Trans-Nzoia,Kitale,14686,14.0,1049,91-95
+Rift Valley,Trans-Nzoia,Kitale,12740,10.0,1274,96-00
+Rift Valley,Trans-Nzoia,Kitale,55958,14.0,3997,01-05
+Rift Valley,Trans-Nzoia,Kitale,50445,15.0,3363,06-10
+Rift Valley,Trans-Nzoia,Kitale,14985,9.0,1665,11-15
+Rift Valley,Trans-Nzoia,Cherangany,56896,16.0,3556,86-90
+Rift Valley,Trans-Nzoia,Cherangany,57171,19.0,3009,91-95
+Rift Valley,Trans-Nzoia,Cherangany,63180,13.0,4860,96-00
+Rift Valley,Trans-Nzoia,Cherangany,22833,9.0,2537,01-05
+Rift Valley,Trans-Nzoia,Cherangany,36010,10.0,3601,06-10
+Rift Valley,Trans-Nzoia,Cherangany,10030,10.0,1003,11-15
+Western,Kisii,Kisii,41076,14.0,2934,86-90
+Western,Kisii,Kisii,63285,15.0,4219,91-95
+Western,Kisii,Kisii,30432,16.0,1902,96-00
+Western,Kisii,Kisii,10965,15.0,731,01-05
+Western,Kisii,Kisii,95148,18.0,5286,06-10
+Western,Kisii,Kisii,73926,18.0,4107,11-15
+Western,Kisii,Kericho,65784,12.0,5482,86-90
+Western,Kisii,Kericho,30006,9.0,3334,91-95
+Western,Kisii,Kericho,91134,18.0,5063,96-00
+Western,Kisii,Kericho,87264,18.0,4848,01-05
+Western,Kisii,Kericho,34596,9.0,3844,06-10
+Western,Kisii,Kericho,36160,16.0,2260,11-15
+Western,Nyamira,Nyamira,86488,19.0,4552,86-90
+Western,Nyamira,Nyamira,43320,10.0,4332,91-95
+Western,Nyamira,Nyamira,22290,15.0,1486,96-00
+Western,Nyamira,Nyamira,65759,19.0,3461,01-05
+Western,Nyamira,Nyamira,13882,11.0,1262,06-10
+Western,Nyamira,Nyamira,27840,12.0,2320,11-15
+Western,Nyamira,Nyaribari,28212,12.0,2351,86-90
+Western,Nyamira,Nyaribari,23012,11.0,2092,91-95
+Western,Nyamira,Nyaribari,29733,11.0,2703,96-00
+Western,Nyamira,Nyaribari,41520,15.0,2768,01-05
+Western,Nyamira,Nyaribari,104082,19.0,5478,06-10
+Western,Nyamira,Nyaribari,13320,10.0,1332,11-15
