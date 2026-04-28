@@ -11,7 +11,7 @@ import pandas as pd
 
 from .decision import classify_production_risk, format_decision_message
 from .feature_engineering import infer_environmental_features
-from .utils import MODEL_METADATA_PATH, MODEL_PATH, load_json
+from .utils import AUGMENTED_DATA_PATH, CLEANED_DATA_PATH, DEFAULT_RAW_DATA_PATH, MODEL_METADATA_PATH, MODEL_PATH, clean_column_names, load_json
 
 
 def load_model_artifacts(model_path: str | Path = MODEL_PATH, metadata_path: str | Path = MODEL_METADATA_PATH) -> tuple[Any, dict[str, Any]]:
@@ -59,8 +59,36 @@ def build_input_frame(sample: dict[str, Any], metadata: dict[str, Any]) -> pd.Da
     frame = pd.DataFrame([record], columns=feature_columns)
     environmental_columns = ["rainfall_mm", "temperature_c", "humidity_pct"]
     if any(column in feature_columns for column in environmental_columns):
+        needs_inference = any(column not in sample or pd.isna(sample.get(column)) for column in environmental_columns)
+        if not needs_inference:
+            return frame
         frame = infer_environmental_features(frame)
     return frame
+
+
+def load_real_sample_from_dataset(metadata: dict[str, Any], sample_index: int = 0) -> tuple[dict[str, Any], Path]:
+    """Extract a real feature row from the project dataset for portable inference."""
+
+    feature_columns = metadata.get("feature_columns")
+    if not feature_columns:
+        raise ValueError("Model metadata does not contain feature column information.")
+
+    for candidate_path in [AUGMENTED_DATA_PATH, CLEANED_DATA_PATH, DEFAULT_RAW_DATA_PATH]:
+        if not Path(candidate_path).exists():
+            continue
+        frame = clean_column_names(pd.read_csv(candidate_path))
+        if frame.empty:
+            continue
+
+        row = frame.iloc[sample_index % len(frame)].to_dict()
+        sample: dict[str, Any] = {}
+        for column in feature_columns:
+            sample[column] = row.get(column, np.nan)
+        return sample, Path(candidate_path)
+
+    raise FileNotFoundError(
+        "No dataset found for sample extraction. Place the Kenya maize CSV in data/ or run the cleaning pipeline first."
+    )
 
 
 def predict_from_sample(model: Any, sample: dict[str, Any], metadata: dict[str, Any]) -> tuple[float, str]:
@@ -113,7 +141,9 @@ def main() -> None:
     elif args.values:
         sample = _parse_key_value_pairs(args.values)
     else:
-        sample = prompt_for_sample(metadata)
+        sample, source_path = load_real_sample_from_dataset(metadata)
+        print(f"Using real sample extracted from {source_path}:")
+        print(json.dumps(sample, indent=2, default=str))
 
     prediction, decision = predict_from_sample(model, sample, metadata)
     threshold = float(metadata.get("decision_threshold", 0.0))

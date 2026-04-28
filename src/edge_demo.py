@@ -10,7 +10,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from .predict import build_input_frame, load_model_artifacts, prompt_for_sample
+from .predict import build_input_frame, load_model_artifacts, load_real_sample_from_dataset, prompt_for_sample
 from .utils import EDGE_LATENCY_CSV_PATH, EDGE_LATENCY_TXT_PATH, ensure_project_dirs, save_text
 
 
@@ -89,7 +89,8 @@ def main() -> None:
         sample = _parse_key_value_pairs(args.values)
     else:
         _, metadata = load_model_artifacts(args.model_path, args.metadata_path)
-        sample = prompt_for_sample(metadata)
+        sample, source_path = load_real_sample_from_dataset(metadata)
+        print(f"Using real sample extracted from {source_path}.")
 
     results, _, _ = run_latency_demo(sample, args.model_path, args.metadata_path, args.iterations, args.warmup, args.batch_size)
     if not results.empty:
