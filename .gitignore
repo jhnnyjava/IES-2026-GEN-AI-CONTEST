@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.env
+.env*
+.DS_Store
+.ipynb_checkpoints/
+data/*.csv
+models/*.pkl
+reports/*.csv
+reports/*.txt
+reports/*.md
+figures/*
