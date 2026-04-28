@@ -144,6 +144,77 @@ Recommended setup:
 - run `python -m src.predict` for interactive inference
 - run `python -m src.edge_demo` to measure latency offline
 
+## Validated Pi4 Runbook (Reproduced)
+
+The following sequence was executed successfully on Raspberry Pi 4.
+
+1. Enter project and activate virtual environment:
+
+```bash
+cd ~/IES-2026-GEN-AI-CONTEST
+source .venv/bin/activate
+```
+
+2. Pull latest code:
+
+```bash
+git pull origin main
+```
+
+3. Generate a dataset on Pi (for testing/reproducibility when real CSV is unavailable):
+
+```bash
+python create_dataset.py
+```
+
+4. Train and save model artifacts on Pi:
+
+```bash
+python main.py --skip-edge-demo
+```
+
+5. Verify model files:
+
+```bash
+ls models
+```
+
+Expected files:
+
+```text
+best_model.pkl
+best_model_metadata.json
+```
+
+6. Run inference test:
+
+```bash
+python -m src.predict --values adlevel1=rift_valley adlevel2=nakuru adlevel3=nakuru year=86-90 areaharv=1200
+```
+
+Observed output during validation:
+
+```text
+Predicted mazyield: 12.3500
+```
+
+7. Run edge latency benchmark:
+
+```bash
+python -m src.edge_demo --values adlevel1=rift_valley adlevel2=nakuru adlevel3=nakuru year=86-90 areaharv=1200 --iterations 50 --warmup 5
+```
+
+Observed output during validation:
+
+```text
+Mean latency: 97.4793 ms
+```
+
+Notes:
+
+- If you use a real maize CSV, place it at `data/ken_maize_production.csv` and rerun training.
+- The synthetic dataset step is only a fallback for reproducibility and device bring-up.
+
 ## Limitations
 
 - The dataset is aggregated by period, so the `YEAR` field is not a true annual time series.
