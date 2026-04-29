@@ -61,12 +61,12 @@ def _build_model_candidates() -> dict[str, tuple[Any, dict[str, list[Any]]]]:
     return {
         "linear_regression": (LinearRegression(), {}),
         "random_forest": (
-            RandomForestRegressor(random_state=RANDOM_STATE, n_jobs=-1),
-            {"model__n_estimators": [120, 200], "model__max_depth": [None, 10], "model__min_samples_leaf": [1, 2], "model__max_features": ["sqrt"]},
+            RandomForestRegressor(random_state=RANDOM_STATE, n_jobs=-1, n_estimators=200),
+            {"model__max_depth": [None, 10], "model__min_samples_leaf": [1, 2], "model__max_features": ["sqrt"]},
         ),
         "gradient_boosting": (
-            GradientBoostingRegressor(random_state=RANDOM_STATE),
-            {"model__n_estimators": [120, 180], "model__learning_rate": [0.05, 0.1], "model__max_depth": [2, 3], "model__subsample": [0.8]},
+            GradientBoostingRegressor(random_state=RANDOM_STATE, n_estimators=200),
+            {"model__learning_rate": [0.05, 0.1], "model__max_depth": [2, 3], "model__subsample": [0.8]},
         ),
     }
 

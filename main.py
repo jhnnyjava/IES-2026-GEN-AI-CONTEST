@@ -53,7 +53,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run the complete AgriResilAI+ training and inference workflow.")
     parser.add_argument("--data-path", type=str, default=str(DEFAULT_RAW_DATA_PATH), help="Path to the Kenya maize production CSV.")
     parser.add_argument("--sample-json", type=str, help="Optional JSON sample to use for the inference demo.")
-    parser.add_argument("--edge-iterations", type=int, default=50, help="Number of latency measurements to run.")
+    parser.add_argument("--edge-iterations", type=int, default=200, help="Number of latency measurements to run.")
     parser.add_argument("--edge-batch-size", type=int, default=8, help="Batch size for edge latency benchmarking.")
     parser.add_argument("--skip-edge-demo", action="store_true", help="Skip the Raspberry Pi edge latency demo.")
     return parser

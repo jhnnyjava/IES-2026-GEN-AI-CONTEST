@@ -22,7 +22,7 @@ def run_latency_demo(
     sample: dict[str, Any],
     model_path: str | Path,
     metadata_path: str | Path,
-    iterations: int = 50,
+    iterations: int = 200,
     warmup: int = 5,
     batch_size: int = 8,
 ) -> tuple[pd.DataFrame, Path, Path]:
@@ -71,7 +71,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument("--values", nargs="*", help="Feature values as key=value pairs.")
     parser.add_argument("--model-path", type=str, default="models/best_model.pkl")
     parser.add_argument("--metadata-path", type=str, default="models/best_model_metadata.json")
-    parser.add_argument("--iterations", type=int, default=50)
+    parser.add_argument("--iterations", type=int, default=200)
     parser.add_argument("--warmup", type=int, default=5)
     parser.add_argument("--batch-size", type=int, default=8)
     return parser
