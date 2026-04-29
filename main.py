@@ -71,10 +71,15 @@ def main() -> None:
     from src.data_integration import integrate_climate_with_maize
     
     merged_path = Path("data/processed/merged_dataset.csv")
+    env_cols = ["annual_rainfall", "long_rains", "short_rains", "rainfall_std", "avg_temp", "temp_max", "temp_min", "temp_std"]
     if merged_path.exists():
-        # Use pre-merged dataset if available
-        training_df = pd.read_csv(merged_path)
-        print("Using pre-integrated climate dataset")
+        # Reuse only if the cached file already has the climate features.
+        cached_df = pd.read_csv(merged_path)
+        if all(c in cached_df.columns for c in env_cols):
+            training_df = cached_df
+            print("Using pre-integrated climate dataset")
+        else:
+            training_df = integrate_climate_with_maize(dataset_bundle.cleaned)
     else:
         # Try to integrate climate CSVs if they exist
         try:
@@ -84,7 +89,6 @@ def main() -> None:
             training_df = dataset_bundle.augmented
 
     # Check if environmental features are present for ablation
-    env_cols = ["annual_rainfall", "long_rains", "short_rains", "rainfall_std", "avg_temp", "temp_max", "temp_min", "temp_std"]
     has_env = all(c in training_df.columns for c in env_cols)
     if has_env:
         from src.train import perform_feature_ablation

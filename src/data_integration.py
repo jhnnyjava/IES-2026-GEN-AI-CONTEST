@@ -91,13 +91,13 @@ def _aggregate_rainfall(rain_df: pd.DataFrame) -> pd.DataFrame:
     pivot = pivot.fillna(np.nan)
 
     agg = pd.DataFrame()
-    agg["year"] = pivot.index
-    agg["annual_rainfall"] = rain_df.groupby("year")["value"].sum()
-    agg["rainfall_std"] = rain_df.groupby("year")["value"].std()
+    agg["year"] = pivot.index.to_numpy()
+    agg["annual_rainfall"] = rain_df.groupby("year")["value"].sum().to_numpy()
+    agg["rainfall_std"] = rain_df.groupby("year")["value"].std().to_numpy()
     # Long rains: Mar(3), Apr(4), May(5)
-    agg["long_rains"] = pivot.get(3, 0.0) + pivot.get(4, 0.0) + pivot.get(5, 0.0)
+    agg["long_rains"] = (pivot.get(3, 0.0) + pivot.get(4, 0.0) + pivot.get(5, 0.0)).to_numpy()
     # Short rains: Oct(10), Nov(11), Dec(12)
-    agg["short_rains"] = pivot.get(10, 0.0) + pivot.get(11, 0.0) + pivot.get(12, 0.0)
+    agg["short_rains"] = (pivot.get(10, 0.0) + pivot.get(11, 0.0) + pivot.get(12, 0.0)).to_numpy()
 
     agg = agg.reset_index(drop=True)
     return agg
@@ -109,11 +109,11 @@ def _aggregate_temperature(temp_df: pd.DataFrame) -> pd.DataFrame:
     pivot = pivot.fillna(np.nan)
 
     agg = pd.DataFrame()
-    agg["year"] = pivot.index
-    agg["avg_temp"] = pivot.mean(axis=1)
-    agg["temp_max"] = pivot.max(axis=1)
-    agg["temp_min"] = pivot.min(axis=1)
-    agg["temp_std"] = pivot.std(axis=1)
+    agg["year"] = pivot.index.to_numpy()
+    agg["avg_temp"] = pivot.mean(axis=1).to_numpy()
+    agg["temp_max"] = pivot.max(axis=1).to_numpy()
+    agg["temp_min"] = pivot.min(axis=1).to_numpy()
+    agg["temp_std"] = pivot.std(axis=1).to_numpy()
 
     agg = agg.reset_index(drop=True)
     return agg
@@ -253,9 +253,10 @@ def integrate_climate_with_maize(
             )
             env_vals.update(vals)
 
-        new_row = row.copy()
-        new_row.update(env_vals)
-        merged_rows.append(new_row)
+            # Convert Series to dict, merge with env_vals, and create new dict
+            row_dict = row.to_dict()
+            row_dict.update(env_vals)
+            merged_rows.append(row_dict)
 
     merged = pd.DataFrame(merged_rows)
 
