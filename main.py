@@ -67,7 +67,36 @@ def main() -> None:
     dataset_bundle = load_and_prepare_dataset(args.data_path)
     save_cleaned_dataset(dataset_bundle.cleaned, CLEANED_DATA_PATH)
 
-    training_report = train_project(dataset_bundle.augmented)
+    # Attempt to integrate real climate data (rainfall, temperature)
+    from src.data_integration import integrate_climate_with_maize
+    
+    merged_path = Path("data/processed/merged_dataset.csv")
+    env_cols = ["annual_rainfall", "long_rains", "short_rains", "rainfall_std", "avg_temp", "temp_max", "temp_min", "temp_std"]
+    if merged_path.exists():
+        # Reuse only if the cached file already has the climate features.
+        cached_df = pd.read_csv(merged_path)
+        if all(c in cached_df.columns for c in env_cols):
+            training_df = cached_df
+            print("Using pre-integrated climate dataset")
+        else:
+            training_df = integrate_climate_with_maize(dataset_bundle.cleaned)
+    else:
+        # Try to integrate climate CSVs if they exist
+        try:
+            training_df = integrate_climate_with_maize(dataset_bundle.cleaned)
+        except FileNotFoundError:
+            print("Climate data not found; using augmented dataset without real climate features")
+            training_df = dataset_bundle.augmented
+
+    # Check if environmental features are present for ablation
+    has_env = all(c in training_df.columns for c in env_cols)
+    if has_env:
+        from src.train import perform_feature_ablation
+        print("Running feature ablation analysis...")
+        perform_feature_ablation(training_df)
+
+    # Train on the chosen dataset
+    training_report = train_project(training_df)
     save_results_table(training_report.comparison_table, RESULTS_CSV_PATH)
     save_model_artifacts(training_report.primary_bundle, training_report.comparison_table, dataset_bundle.cleaned_summary, dataset_bundle.augmented_summary)
 
@@ -93,6 +122,8 @@ def main() -> None:
     ]
     if evaluation_summary.get("feature_importance_path"):
         discussion_text.append(f"Feature importance plot: {evaluation_summary['feature_importance_path']}")
+    if has_env:
+        discussion_text.append("Feature ablation analysis: reports/environmental_impact_analysis.txt")
     save_text(PAPER_DISCUSSION_PATH, "\n".join(discussion_text) + "\n")
 
     if not args.skip_edge_demo:
