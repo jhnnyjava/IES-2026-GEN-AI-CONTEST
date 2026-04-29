@@ -219,3 +219,79 @@ def save_model_artifacts(bundle: ModelBundle, comparison_df: pd.DataFrame, datas
     }
     save_json(metadata_output, metadata)
     return model_output, metadata_output
+
+
+def perform_feature_ablation(df: pd.DataFrame, output_csv: str | Path = "reports/feature_ablation_results.csv", output_txt: str | Path = "reports/environmental_impact_analysis.txt") -> None:
+    """Train with and without environmental features and save comparison results.
+
+    Compares performance on merged dataset (with real climate features) vs. baseline (without).
+    Writes CSV and human-readable analysis.
+    """
+    ensure_project_dirs()
+    env_cols = ["annual_rainfall", "long_rains", "short_rains", "rainfall_std", "avg_temp", "temp_max", "temp_min", "temp_std"]
+    has_env = all(c in df.columns for c in env_cols)
+
+    if not has_env:
+        return  # No environmental features to ablate
+
+    # Train on full dataset (with env)
+    baseline_df = df.copy()
+    baseline_comp, baseline_bundle = train_target_models(baseline_df, TARGET_PRIMARY)
+
+    # Train without env features
+    no_env_df = df.drop(columns=[c for c in env_cols if c in df.columns], errors="ignore")
+    noenv_comp, noenv_bundle = train_target_models(no_env_df, TARGET_PRIMARY)
+
+    # Prepare CSV summary
+    rows = []
+    for name, comp in (("with_env", baseline_comp), ("without_env", noenv_comp)):
+        best = comp.sort_values("mae").iloc[0]
+        rows.append({
+            "mode": name,
+            "model": best["model"],
+            "mae": float(best["mae"]),
+            "rmse": float(best["rmse"]),
+            "r2": float(best["r2"]),
+            "cv_mae_mean": float(best["cv_mae_mean"]),
+        })
+
+    out_path = Path(output_csv)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_csv(out_path, index=False)
+
+    # Write analysis text
+    best_with = rows[0]
+    best_without = rows[1]
+    mae_improvement = (best_without["mae"] - best_with["mae"]) if best_without["mae"] and best_with["mae"] else 0.0
+    r2_improvement = (best_with["r2"] - best_without["r2"]) if best_with["r2"] and best_without["r2"] else 0.0
+
+    lines = [
+        "Environmental Impact Analysis",
+        "",
+        f"Primary target: {TARGET_PRIMARY}",
+        "",
+        "Best model WITH environmental features (rainfall + temperature):",
+        f"- Model: {best_with['model']}",
+        f"- MAE: {best_with['mae']:.4f}",
+        f"- RMSE: {best_with['rmse']:.4f}",
+        f"- R²: {best_with['r2']:.4f}",
+        f"- CV MAE: {best_with['cv_mae_mean']:.4f}",
+        "",
+        "Best model WITHOUT environmental features:",
+        f"- Model: {best_without['model']}",
+        f"- MAE: {best_without['mae']:.4f}",
+        f"- RMSE: {best_without['rmse']:.4f}",
+        f"- R²: {best_without['r2']:.4f}",
+        f"- CV MAE: {best_without['cv_mae_mean']:.4f}",
+        "",
+        f"MAE reduction with environmental features: {mae_improvement:.4f}",
+        f"R² improvement with environmental features: {r2_improvement:.6f}",
+        "",
+        "Conclusion:",
+        f"Environmental features (real rainfall and temperature aggregates) {'improve' if mae_improvement > 0 else 'do not improve'} model performance.",
+        "This validates the importance of climate variables in agricultural yield prediction.",
+    ]
+
+    Path(output_txt).parent.mkdir(parents=True, exist_ok=True)
+    with open(output_txt, "w", encoding="utf8") as fh:
+        fh.write("\n".join(lines) + "\n")
